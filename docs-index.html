@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR.OSINT-X Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-text {
+            background: linear-gradient(90deg, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .module-card {
+            transition: all 0.3s ease;
+        }
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .dark-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ef4444, #f59e0b);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .nav-link.active::after {
+            width: 100%;
+        }
+        pre {
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            padding: 2px 8px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+    <!-- Dark Mode Toggle -->
+    <button id="darkToggle" class="dark-toggle bg-gray-800 text-white p-3 rounded-full shadow-lg">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-yellow-500 rounded-full flex items-center justify-center mr-4">
+                         <i class="fas fa-satellite text-osint-blue text-xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold gradient-text">MR.OSINT-X</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://github.com/mrradix-ad/mr-osint-x" target="_blank" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg flex items-center">
+                        <i class="fab fa-github mr-2"></i> GitHub
+                    </a>
+                    <a href="index.html" target="_blank" class="bg-gradient-to-r from-red-500 to-yellow-500 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-satellite text-osint-blue text-3xl"></i> Mr.OSINT-X 
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Navigation Tabs -->
+        <div class="mb-8 border-b border-gray-200 dark:border-gray-700">
+            <ul class="flex flex-wrap -mb-px" id="navTabs">
+                <li class="mr-2">
+                    <a href="#about" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 dark:hover:text-gray-300 active">About</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#modules" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 dark:hover:text-gray-300">Modules</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#installation" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 dark:hover:text-gray-300">Installation</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#usage" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 dark:hover:text-gray-300">Usage</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#api" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 dark:hover:text-gray-300">API</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#configuration" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 dark:hover:text-gray-300">Configuration</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#security" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 dark:hover:text-gray-300">Security</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#community" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 dark:hover:text-gray-300">Community</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tab Contents -->
+        <div id="tabContents">
+            <!-- About Section -->
+            <section id="about" class="tab-content active">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-4 gradient-text">🧠 What is MR.OSINT-X?</h2>
+                    <p class="mb-4">MR.OSINT-X is a comprehensive, intelligence-grade Open Source Intelligence (OSINT) framework designed for cybersecurity professionals, digital forensics investigators, threat intelligence analysts, and security researchers.</p>
+                    <p>It provides a unified platform for conducting deep investigations across multiple domains including social media, cryptocurrency, darkweb, satellite imagery, and more.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex items-start">
+                        <div class="bg-red-100 dark:bg-red-900/20 p-3 rounded-full mr-4">
+                            <i class="fas fa-shield-alt text-red-500 dark:text-red-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold mb-1">19 Specialized Modules</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Covering every aspect of OSINT investigation</p>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex items-start">
+                        <div class="bg-blue-100 dark:bg-blue-900/20 p-3 rounded-full mr-4">
+                            <i class="fas fa-robot text-blue-500 dark:text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold mb-1">AI-Powered Analysis</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">With Genkit and Ollama integration</p>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex items-start">
+                        <div class="bg-purple-100 dark:bg-purple-900/20 p-3 rounded-full mr-4">
+                            <i class="fas fa-user-secret text-purple-500 dark:text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold mb-1">Darkweb Intelligence</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">TOR-enabled onion site monitoring</p>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex items-start">
+                        <div class="bg-green-100 dark:bg-green-900/20 p-3 rounded-full mr-4">
+                            <i class="fas fa-globe text-green-500 dark:text-green-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold mb-1">Global Coverage</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">International database support</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-4 gradient-text">🎯 Key Features</h2>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>500+ Social Media Platforms supported for user investigation</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Cryptocurrency Tracking with blockchain analysis and scam detection</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Satellite OSINT with real-time imagery and change detection</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Privacy-First with TOR integration and operational security</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Advanced AI-powered analysis and pattern recognition</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Comprehensive documentation and community support</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Modules Section -->
+            <section id="modules" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">🧩 Complete Module Overview</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Phone Number OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 dark:bg-blue-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-phone text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">📱 Phone Number OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Country, region, carrier identification</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>CNAM / Line type detection</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Telegram, WhatsApp, Signal presence checking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Social media profile correlation</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Email OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-green-100 dark:bg-green-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-envelope text-green-500 dark:text-green-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">📧 Email OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>SMTP/MX validation and testing</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Domain reputation analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Gravatar image scraping</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Breach checking (HIBP, Dehashed, IntelX)</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Domain OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-purple-100 dark:bg-purple-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-globe text-purple-500 dark:text-purple-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🌐 Domain, IP & Hosting OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Technology stack detection</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>IP geolocation and ASN information</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Subdomain discovery</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>WHOIS and registrant data extraction</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Cryptocurrency OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-yellow-100 dark:bg-yellow-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-coins text-yellow-500 dark:text-yellow-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">💰 Cryptocurrency & Wallet OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Multi-blockchain wallet address lookup</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Transaction history and flow analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Scam database integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Mixer detection (Wasabi, Tornado Cash, etc.)</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Darkweb OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-gray-800 dark:bg-gray-200 p-3 rounded-full mr-4">
+                                <i class="fas fa-user-secret text-gray-100 dark:text-gray-800"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🌑 Darkweb OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Onion site search (Ahmia, dark.fail, onion.live)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Mirror site detection and tracking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Escrow service lookup</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>TOR uptime monitoring</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Social Media OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-pink-100 dark:bg-pink-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-users text-pink-500 dark:text-pink-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">👤 Social Media OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>500+ platform coverage</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Telegram user information and phone checking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Instagram, Facebook, Twitter, LinkedIn scraping</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>AI-powered photo matching</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Image OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-indigo-100 dark:bg-indigo-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-image text-indigo-500 dark:text-indigo-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">📸 Image, Face & Visual OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>EXIF data extraction (GPS, camera, timestamp)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Reverse image search across platforms</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>DeepFace facial recognition</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>OCR text extraction</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Satellite OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-teal-100 dark:bg-teal-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-satellite text-teal-500 dark:text-teal-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🛰️ Satellite OSINT & GEO Tracking</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Before/after satellite imagery</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>AI-powered change detection</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Planet Labs API integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Sentinel Hub (ESA) integration</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Vehicle OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-orange-100 dark:bg-orange-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-car text-orange-500 dark:text-orange-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🚗 Vehicle, VIN & License Plate OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>VIN decoder integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Vehicle specification lookup</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Global license plate recognition</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Marketplace metadata extraction</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Banking OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-emerald-100 dark:bg-emerald-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-university text-emerald-500 dark:text-emerald-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🏦 Banking & Financial OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>BIN number analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>SWIFT/IFSC code validation</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Card issuer identification</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>AML database checking</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Company OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-cyan-100 dark:bg-cyan-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-building text-cyan-500 dark:text-cyan-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🏢 Company & Business Intelligence</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Company registration lookup</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Director and executive tracing</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Domain ownership analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Financial health assessment</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- IP OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-violet-100 dark:bg-violet-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-network-wired text-violet-500 dark:text-violet-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🌐 IP Address Intelligence</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Multi-source IP analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>TOR exit node detection</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Blacklist and reputation checking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Hosting provider identification</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- AI Layer -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-fuchsia-100 dark:bg-fuchsia-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-brain text-fuchsia-500 dark:text-fuchsia-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🧠 AI Intelligence Layer</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Pattern detection algorithms</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Risk scoring models</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Scam probability analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Profile authenticity classification</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Intelligence Agency OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-rose-100 dark:bg-rose-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-flag text-rose-500 dark:text-rose-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🛰️ Intelligence Agency & Global Risk OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>CIA World Factbook integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>OFAC/UN sanctions checking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Military and geopolitical feeds</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Espionage risk assessment</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Malware OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-amber-100 dark:bg-amber-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-bug text-amber-500 dark:text-amber-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🔐 Malware & File Intelligence</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>VirusTotal integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Sandbox analysis summary</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>File hash searching (MD5/SHA256)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>URL malware detection</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Global OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-sky-100 dark:bg-sky-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-earth-americas text-sky-500 dark:text-sky-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🌎 Global OSINT Engine</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Auto-generated Google/Bing dorks</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>International database support</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Multi-language search capabilities</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Regional compliance checking</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Advanced Social Media -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-lime-100 dark:bg-lime-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-user-tie text-lime-500 dark:text-lime-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">👥 Advanced Social Media Investigation</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Cross-platform user correlation</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Behavioral pattern analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Leak database integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Social graph mapping</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- YouTube OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-red-100 dark:bg-red-900/20 p-3 rounded-full mr-4">
+                                <i class="fab fa-youtube text-red-500 dark:text-red-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">▶️ YouTube OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Channel metadata extraction</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Video content analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Comment sentiment analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Subscriber pattern recognition</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Indian Docs OSINT -->
+                    <div class="module-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-orange-100 dark:bg-orange-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-passport text-orange-500 dark:text-orange-400"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">🇮🇳 Indian Document OSINT</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Aadhaar card validation</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>PAN card analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Voter ID verification</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-2 text-xs"></i>
+                                <span>Driving license validation</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Installation Section -->
+            <section id="installation" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">🚀 Quick Start</h2>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">🐳 Docker Installation (Recommended)</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="dockerCode"># Clone the repository
+git clone https://github.com/mrradix-ad/mr-osint-x
+cd mr-osint-x
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Access the container
+docker exec -it mr-osint-x bash
+
+# Run your first investigation
+mr-osint-x --phone +1234567890 --basic-scan</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('dockerCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">🐍 Manual Installation</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="manualCode"># Prerequisites (Ubuntu/Debian)
+sudo apt update && sudo apt install -y python3-pip python3-venv tor postgresql redis-server
+
+# Clone and setup
+git clone https://github.com/mrradix-ad/mr-osint-x
+cd mr-osint-x
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure settings
+cp config/settings.example.py config/settings.py
+# Edit config/settings.py with your API keys and preferences
+
+# Initialize database
+python3 setup.py init_db
+
+# Start investigation
+mr-osint-x --email target@example.com --full-scan</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('manualCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">⚡ One-Line Installation</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="oneLineCode">curl -fsSL https://raw.githubusercontent.com/mrradix-ad/mr-osint-x/main/install.sh | bash</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('oneLineCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Usage Section -->
+            <section id="usage" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">💡 Usage Examples</h2>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">🔍 Basic Investigations</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="basicCode"># Phone number investigation
+mr-osint-x --phone +1234567890 --full-scan
+
+# Email investigation with leak checking
+mr-osint-x --email target@example.com --leaks --social
+
+# Domain analysis with subdomains
+mr-osint-x --domain example.com --subdomains --tech-stack
+
+# Username investigation across platforms
+mr-osint-x --username john_doe_93 --social-deep --social-graph</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('basicCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">🌑 Advanced Investigations</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="advancedCode"># Cryptocurrency investigation with transaction tracing
+mr-osint-x --wallet 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa --trace-funds --scam-check
+
+# Darkweb investigation
+mr-osint-x --onion 3g2upl4pq6kufc4m.onion --marketplace-check --mirror-search
+
+# Image analysis with face recognition
+mr-osint-x --image suspicious.jpg --reverse-search --exif --faces --ai-analyze
+
+# Multi-target batch investigation
+mr-osint-x --batch-file targets.txt --output-format json --full-report</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('advancedCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">🎛️ Advanced Configuration</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="configCode"># Custom investigation with specific modules
+mr-osint-x --target example.com \
+  --modules domain,ip,social,crypto \
+  --output-dir ./investigation_results \
+  --ai-analyze \
+  --tor-enabled
+
+# Real-time monitoring setup
+mr-osint-x --monitor \
+  --keywords "target_company,ceo_name" \
+  --platforms twitter,telegram,darkweb \
+  --alert-webhook https://your-webhook.com</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('configCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Section -->
+            <section id="api" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">🛠️ API Integration</h2>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">🌐 REST API</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="restApiCode"># Start API server
+python3 api_server.py --port 8080
+
+# Example API calls
+curl -X POST http://localhost:8080/api/v1/investigate \
+  -H "Content-Type: application/json" \
+  -d '{"type": "email", "target": "test@example.com", "modules": ["basic", "leaks"]}'</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('restApiCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">🤖 Telegram Bot</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="telegramCode"># Configure bot token in config/settings.py
+python3 telegram_bot.py
+
+# Bot commands
+/investigate email test@example.com
+/crypto 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+/username john_doe_93
+/darkweb search marketplace</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('telegramCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuration Section -->
+            <section id="configuration" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">🔧 Configuration</h2>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">📋 Required API Keys</h3>
+                    <p class="mb-4">Create <code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">config/api_keys.json</code>:</p>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="apiKeysCode">{
+    "virustotal": "your_virustotal_key",
+    "shodan": "your_shodan_key",
+    "hibp": "your_hibp_key",
+    "ipapi": "your_ipapi_key",
+    "telegram": "your_telegram_bot_token",
+    "opencorporates": "your_opencorporates_key",
+    "dehashed": "your_dehashed_key",
+    "intelx": "your_intelx_key",
+    "planet_labs": "your_planet_labs_key",
+    "blockchain_info": "your_blockchain_key",
+    "openai": "your_openai_key"
+}</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('apiKeysCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">⚙️ Environment Variables</h3>
+                    <div class="relative">
+                        <pre class="bg-gray-800 dark:bg-gray-700 text-gray-100 p-4 rounded-lg overflow-x-auto"><code id="envVarsCode"># Database configuration
+export DATABASE_URL="postgresql://user:pass@localhost/mrosintx"
+export REDIS_URL="redis://localhost:6379/0"
+
+# TOR configuration
+export TOR_PROXY="socks5://127.0.0.1:9050"
+export TOR_CONTROL_PORT="9051"
+
+# AI configuration
+export OLLAMA_URL="http://localhost:11434"
+export DEFAULT_AI_MODEL="llama2"
+
+# Security settings
+export ENABLE_RATE_LIMITING="true"
+export MAX_REQUESTS_PER_MINUTE="60"</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard('envVarsCode')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Section -->
+            <section id="security" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">🔒 Security & Privacy</h2>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">🛡️ Operational Security</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <div class="bg-green-100 dark:bg-green-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-check-circle text-green-500 dark:text-green-400"></i>
+                            </div>
+                            <span><strong>TOR Integration</strong>: All requests can be routed through TOR</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-green-100 dark:bg-green-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-check-circle text-green-500 dark:text-green-400"></i>
+                            </div>
+                            <span><strong>VPN Support</strong>: Compatible with VPN services</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-green-100 dark:bg-green-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-check-circle text-green-500 dark:text-green-400"></i>
+                            </div>
+                            <span><strong>API Key Rotation</strong>: Automatic key rotation capabilities</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-green-100 dark:bg-green-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-check-circle text-green-500 dark:text-green-400"></i>
+                            </div>
+                            <span><strong>Rate Limiting</strong>: Built-in rate limiting to avoid detection</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-green-100 dark:bg-green-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-check-circle text-green-500 dark:text-green-400"></i>
+                            </div>
+                            <span><strong>Logging Control</strong>: Comprehensive logging with privacy controls</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">🔐 Data Protection</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <div class="bg-blue-100 dark:bg-blue-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-lock text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <span><strong>Encryption</strong>: All sensitive data encrypted at rest</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-blue-100 dark:bg-blue-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-lock text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <span><strong>Secure Storage</strong>: PostgreSQL with encryption</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-blue-100 dark:bg-blue-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-lock text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <span><strong>Access Control</strong>: Role-based access control</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-blue-100 dark:bg-blue-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-lock text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <span><strong>Audit Trail</strong>: Complete investigation audit trails</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">⚖️ Legal Compliance</h3>
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 dark:border-yellow-400 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 dark:text-yellow-400 mt-1 mr-3"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm">
+                                    <strong>Educational Use</strong>: This tool is for educational and legitimate security research only.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <div class="bg-red-100 dark:bg-red-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-gavel text-red-500 dark:text-red-400"></i>
+                            </div>
+                            <span><strong>Terms of Service</strong>: Respects all platform ToS</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-red-100 dark:bg-red-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-gavel text-red-500 dark:text-red-400"></i>
+                            </div>
+                            <span><strong>Privacy Laws</strong>: GDPR, CCPA compliance features</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-red-100 dark:bg-red-900/20 p-2 rounded-full mr-3">
+                                <i class="fas fa-gavel text-red-500 dark:text-red-400"></i>
+                            </div>
+                            <span><strong>Authorization</strong>: Built-in authorization checks</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Community Section -->
+            <section id="community" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 gradient-text">💬 Community</h2>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">🗨️ Get Help</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <a href="https://github.com/mrradix-ad/mr-osint-x/issues" target="_blank" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-lg flex items-center">
+                            <div class="bg-blue-100 dark:bg-blue-900/20 p-3 rounded-full mr-4">
+                                <i class="fab fa-github text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">GitHub Issues</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Report bugs and request features</p>
+                            </div>
+                        </a>
+                        <a href="coming-soon.html" target="_blank" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-lg flex items-center">
+                            <div class="bg-indigo-100 dark:bg-indigo-900/20 p-3 rounded-full mr-4">
+                                <i class="fab fa-discord text-indigo-500 dark:text-indigo-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Discord Server</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Join our community</p>
+                            </div>
+                        </a>
+                        <a href="coming-soon.html" target="_blank" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-lg flex items-center">
+                            <div class="bg-blue-100 dark:bg-blue-900/20 p-3 rounded-full mr-4">
+                                <i class="fab fa-telegram text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Telegram Group</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Real-time discussions</p>
+                            </div>
+                        </a>
+                        <a href="coming-soon.html" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-lg flex items-center">
+                            <div class="bg-red-100 dark:bg-red-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-envelope text-red-500 dark:text-red-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Email Support</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">professional@mr-osint-x.com</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">📖 Resources</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <a href="docs-index.html" target="_blank" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-lg flex items-center">
+                            <div class="bg-purple-100 dark:bg-purple-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-book text-purple-500 dark:text-purple-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Documentation</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">docs.mr-osint-x.com</p>
+                            </div>
+                        </a>
+                        <a href="coming-soon.html" target="_blank" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-4 rounded-lg flex items-center">
+                            <div class="bg-green-100 dark:bg-green-900/20 p-3 rounded-full mr-4">
+                                <i class="fas fa-blog text-green-500 dark:text-green-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Blog</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">blog.mr-osint-x.com</p>
+                            </div>
+                        </a>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-yellow-500 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-satellite text-osint-blue text-3xl"></i>
+                        </div>
+                        <span class="text-xl font-bold">MR.OSINT-X</span>
+                    </div>
+                    <p class="text-gray-400 mt-2">Intelligence-Grade OSINT Framework</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="https://github.com/mrradix-ad" target="_blank" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-github text-2xl"></i>
+                    </a>
+                    <a href="coming-soon.html" target="_blank" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-discord text-2xl"></i>
+                    </a>
+                    <a href="coming-soon.html" target="_blank" class="text-gray-400 hover:text-white">
+                        <i class="fab fa-telegram text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>© 2025 MR.OSINT-X. All rights reserved.</p>
+                <p class="mt-2">Licensed under MIT License - For educational and legitimate security research only.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode toggle
+        const darkToggle = document.getElementById('darkToggle');
+        const html = document.documentElement;
+
+        // Check for saved user preference or use system preference
+        if (localStorage.getItem('darkMode') === 'true' || 
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+            darkToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        darkToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                darkToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                darkToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('darkMode', 'false');
+            }
+        });
+
+        // Tab navigation
+        const tabs = document.querySelectorAll('#navTabs a');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                const target = tab.getAttribute('href');
+                document.querySelector(target).classList.add('active');
+                
+                // Smooth scroll to section
+                document.querySelector(target).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Show all modules button
+        const showAllModules = document.getElementById('showAllModules');
+        const allModules = document.getElementById('allModules');
+
+        showAllModules.addEventListener('click', () => {
+            allModules.classList.toggle('hidden');
+            showAllModules.textContent = allModules.classList.contains('hidden') ? 
+                'Show All 19 Modules' : 'Hide Additional Modules';
+        });
+
+        // Copy to clipboard function
+        function copyToClipboard(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const range = document.createRange();
+            range.selectNode(codeElement);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            
+            // Show copied notification
+            const copyBtn = codeElement.nextElementSibling;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            }, 2000);
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=mrradix/docs-mr-osint-x" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>

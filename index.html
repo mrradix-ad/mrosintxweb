@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR.OSINT-X | Advanced OSINT Framework</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'osint-blue': '#0a192f',
+                        'osint-accent': '#64ffda',
+                        'card-bg': '#112240',
+                        'nav-bg': 'rgba(10, 25, 47, 0.85)'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'mono': ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
+        body {
+            background-color: #0a192f;
+            color: #e6f1ff;
+            scroll-behavior: smooth;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .nav-scrolled {
+            backdrop-filter: blur(10px);
+        }
+        
+        .terminal {
+            background-color: #1e2a47;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .terminal-header {
+            background-color: #2c3a58;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        
+        .terminal-body {
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .terminal-prompt {
+            color: #64ffda;
+        }
+        
+        .terminal-command {
+            color: #e6f1ff;
+        }
+        
+        .terminal-output {
+            color: #8892b0;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .glow {
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.7);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50%;
+            height: 2px;
+            background: #64ffda;
+        }
+        
+        .animated-underline {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .animated-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #64ffda;
+            transition: width 0.3s ease;
+        }
+        
+        .animated-underline:hover::after {
+            width: 100%;
+        }
+        
+        .scroll-indicator {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+        
+        .active-nav {
+            color: #64ffda !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 py-4 transition-all duration-300">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-osint-accent flex items-center justify-center mr-3">
+                    <i class="fas fa-satellite text-osint-blue text-xl"></i>
+                </div>
+                <span class="text-xl font-bold">MR.OSINT-X</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#hero" class="nav-link animated-underline">Home</a>
+                <a href="#about" class="nav-link animated-underline">About</a>
+                <a href="#modules" class="nav-link animated-underline">Modules</a>
+                <a href="#usage" class="nav-link animated-underline">Usage</a>
+                <a href="#tech" class="nav-link animated-underline">Tech</a>
+                <a href="#github" class="px-4 py-2 bg-osint-accent text-osint-blue font-semibold rounded hover:bg-opacity-90 transition">GitHub</a>
+            </div>
+            
+            <button id="mobile-menu-btn" class="md:hidden text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-card-bg py-4 px-4">
+            <div class="flex flex-col space-y-4">
+                <a href="#hero" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#modules" class="nav-link">Modules</a>
+                <a href="#usage" class="nav-link">Usage</a>
+                <a href="#tech" class="nav-link">Tech</a>
+                <a href="#github" class="px-4 py-2 bg-osint-accent text-osint-blue font-semibold rounded text-center">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="min-h-screen flex items-center pt-16">
+        <div class="container mx-auto px-4 py-20">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                        <span class="text-osint-accent glow">MR.OSINT-X</span><br>
+                        Advanced OSINT Framework
+                    </h1>
+                    <p class="text-xl mb-8 text-gray-300">
+                        Unified intelligence platform integrating hundreds of APIs, AI-powered modules, and open-source tools for comprehensive threat analysis.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="docs-index.html" class="px-8 py-3 bg-osint-accent text-osint-blue font-bold rounded-lg hover:bg-opacity-90 transition">
+                            Documentation <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="https://github.com/mrradix-ad/mr-osint-x" class="px-8 py-3 border-2 border-osint-accent text-osint-accent font-bold rounded-lg hover:bg-osint-accent hover:text-osint-blue transition">
+                            GitHub Repository
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative">
+                        <div class="absolute -top-6 -left-6 w-32 h-32 rounded-full bg-osint-accent opacity-20"></div>
+                        <div class="absolute -bottom-6 -right-6 w-40 h-40 rounded-full bg-osint-accent opacity-20"></div>
+                        <div class="relative bg-card-bg rounded-xl p-6 shadow-xl w-full max-w-md">
+                            <div class="terminal">
+                                <div class="terminal-header px-4 py-2 flex items-center">
+                                    <div class="flex space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                    </div>
+                                    <div class="ml-3 text-sm">terminal</div>
+                                </div>
+                                <div class="terminal-body p-4">
+                                    <div class="mb-2">
+                                        <span class="terminal-prompt">$</span>
+                                        <span class="terminal-command"> python mr_osint_x.py --phone "+911234567890"</span>
+                                    </div>
+                                    <div class="terminal-output text-sm">
+                                        <div class="mb-1">[+] Phone number validated: India (IN)</div>
+                                        <div class="mb-1">[+] Carrier: Vodafone Idea</div>
+                                        <div class="mb-1">[+] Registered location: Mumbai, MH</div>
+                                        <div class="mb-1">[+] Social profiles linked: 3 found</div>
+                                        <div class="mb-1">[+] AI Trust Score: 78/100 (Moderate Risk)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-24 text-center">
+                <p class="mb-4">Designed for:</p>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-user-secret text-osint-accent text-2xl mr-2"></i>
+                        <span>Threat Hunters</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-shield-alt text-osint-accent text-2xl mr-2"></i>
+                        <span>Law Enforcement</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-newspaper text-osint-accent text-2xl mr-2"></i>
+                        <span>Investigative Journalists</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-flask text-osint-accent text-2xl mr-2"></i>
+                        <span>Research Units</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-16 text-center scroll-indicator">
+                <a href="#about" class="inline-block animate-bounce">
+                    <i class="fas fa-chevron-down text-osint-accent text-2xl"></i>
+                </a>
+                </div>
+
+                <div class="mt-8 bg-osint-blue p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-4">🧩 Complete Module Overview</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-card-bg p-4 rounded-lg">
+                            <h4 class="font-bold text-osint-accent mb-2">📱 Phone Number OSINT</h4>
+                            <ul class="text-sm text-gray-300 space-y-1">
+                                <li>✅ Country, region, carrier identification</li>
+                                <li>✅ Telegram, WhatsApp, Signal presence</li>
+                                <li>✅ Social media profile correlation</li>
+                            </ul>
+                        </div>
+                        <div class="bg-card-bg p-4 rounded-lg">
+                            <h4 class="font-bold text-osint-accent mb-2">📧 Email OSINT</h4>
+                            <ul class="text-sm text-gray-300 space-y-1">
+                                <li>✅ SMTP/MX validation</li>
+                                <li>✅ Breach checking (HIBP, Dehashed)</li>
+                                <li>✅ Social media profile linking</li>
+                            </ul>
+                        </div>
+                        <div class="bg-card-bg p-4 rounded-lg">
+                            <h4 class="font-bold text-osint-accent mb-2">💰 Cryptocurrency OSINT</h4>
+                            <ul class="text-sm text-gray-300 space-y-1">
+                                <li>✅ Multi-blockchain wallet lookup</li>
+                                <li>✅ Transaction history analysis</li>
+                                <li>✅ Scam database integration</li>
+                            </ul>
+                        </div>
+                        <div class="bg-card-bg p-4 rounded-lg">
+                            <h4 class="font-bold text-osint-accent mb-2">🌑 Darkweb OSINT</h4>
+                            <ul class="text-sm text-gray-300 space-y-1">
+                                <li>✅ Onion site search</li>
+                                <li>✅ Mirror site detection</li>
+                                <li>✅ Forum reputation analysis</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="docs-index.html#modules" class="text-sm text-osint-accent hover:underline">View All 19 Modules →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-card-bg">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-2 section-title">About MR.OSINT-X</h2>
+            <p class="text-gray-300 mb-12 max-w-3xl">
+                MR.OSINT-X is a full-stack intelligence-gathering system built with modular design. It empowers users to run investigations using multiple data points including phone numbers, emails, usernames, domains, social accounts, images, VINs, crypto wallets, and more.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-osint-blue p-6 rounded-xl card-hover">
+                    <div class="w-12 h-12 rounded-full bg-osint-accent flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-osint-blue text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">AI-Powered Analysis</h3>
+                    <p class="text-gray-300">
+                        Leverage advanced AI for behavioral risk prediction, sentiment analysis, and entity resolution using large language models.
+                    </p>
+                </div>
+                
+                <div class="bg-osint-blue p-6 rounded-xl card-hover">
+                    <div class="w-12 h-12 rounded-full bg-osint-accent flex items-center justify-center mb-4">
+                        <i class="fas fa-puzzle-piece text-osint-blue text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Modular Architecture</h3>
+                    <p class="text-gray-300">
+                        Easily extendable with hundreds of specialized modules that can be added or removed based on your investigation needs.
+                    </p>
+                </div>
+                
+                <div class="bg-osint-blue p-6 rounded-xl card-hover">
+                    <div class="w-12 h-12 rounded-full bg-osint-accent flex items-center justify-center mb-4">
+                        <i class="fas fa-globe text-osint-blue text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Global Intelligence</h3>
+                    <p class="text-gray-300">
+                        Access specialized modules for international investigations including Indian document validation and global OSINT sources.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section id="modules" class="py-20">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-2 section-title">Intelligence Modules</h2>
+            <p class="text-gray-300 mb-12 max-w-3xl">
+                Comprehensive suite of specialized modules covering all aspects of open-source intelligence gathering and analysis.
+            </p>
+            
+            <div class="module-grid">
+                <!-- Phone Intelligence -->
+                <div class="bg-card-bg p-6 rounded-xl card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-osint-accent bg-opacity-20 flex items-center justify-center mr-3">
+                            <i class="fas fa-phone text-osint-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Phone Intelligence</h3>
+                    </div>
+                    <ul class="text-gray-300 space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Number validation & carrier lookup</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Reverse search & VOIP detection</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Social media linkage analysis</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Email Intelligence -->
+                <div class="bg-card-bg p-6 rounded-xl card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-osint-accent bg-opacity-20 flex items-center justify-center mr-3">
+                            <i class="fas fa-envelope text-osint-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Email Intelligence</h3>
+                    </div>
+                    <ul class="text-gray-300 space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Breach checks & reputation scoring</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Social link analysis</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Disposable email detection</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- AI Trust Scoring -->
+                <div class="bg-card-bg p-6 rounded-xl card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-osint-accent bg-opacity-20 flex items-center justify-center mr-3">
+                            <i class="fas fa-robot text-osint-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">AI Trust Scoring</h3>
+                    </div>
+                    <ul class="text-gray-300 space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Reputation scoring using LLMs</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Behavioral risk prediction</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Identity credibility assessment</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Crypto Investigation -->
+                <div class="bg-card-bg p-6 rounded-xl card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-osint-accent bg-opacity-20 flex items-center justify-center mr-3">
+                            <i class="fas fa-coins text-osint-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Crypto Investigation</h3>
+                    </div>
+                    <ul class="text-gray-300 space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Wallet tracing & transaction graphing</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Blockchain intelligence</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Darkweb-to-wallet link analysis</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Image Analysis -->
+                <div class="bg-card-bg p-6 rounded-xl card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-osint-accent bg-opacity-20 flex items-center justify-center mr-3">
+                            <i class="fas fa-camera text-osint-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Image Analysis</h3>
+                    </div>
+                    <ul class="text-gray-300 space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>EXIF extraction & reverse search</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Face recognition (DeepFace, OpenCV)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>OCR & steganography detection</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Darkweb Monitoring -->
+                <div class="bg-card-bg p-6 rounded-xl card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-osint-accent bg-opacity-20 flex items-center justify-center mr-3">
+                            <i class="fas fa-mask text-osint-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Darkweb Monitoring</h3>
+                    </div>
+                    <ul class="text-gray-300 space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Onion site discovery</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Hidden service crawling</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Threat actor tracking</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="docs-index.html#modules" class="inline-flex items-center px-6 py-3 border border-osint-accent text-osint-accent rounded-lg hover:bg-osint-accent hover:text-osint-blue transition">
+                    View All 19+ Modules <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage Section -->
+    <section id="usage" class="py-20 bg-card-bg">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-2 section-title">How to Use</h2>
+            <p class="text-gray-300 mb-12 max-w-3xl">
+                MR.OSINT-X provides multiple interfaces for different user preferences - CLI for power users, Web UI for interactive analysis, and API for integration.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Command Line Interface</h3>
+                    <div class="terminal">
+                        <div class="terminal-header px-4 py-2 flex items-center">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <div class="ml-3 text-sm">mr_osint_x</div>
+                        </div>
+                        <div class="terminal-body p-4">
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> python mr_osint_x.py --phone "+911234567890"</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> python mr_osint_x.py --email "target@example.com"</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> python mr_osint_x.py --vin "WBA3B5C56EF586751"</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> python mr_osint_x.py --image "suspect.jpg"</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Web Interface</h3>
+                    <div class="bg-osint-blue p-6 rounded-xl">
+                        <div class="flex mb-4">
+                            <div class="w-8 h-8 rounded-full bg-osint-accent flex items-center justify-center mr-2">
+                                <i class="fas fa-search text-osint-blue"></i>
+                            </div>
+                            <h4 class="text-lg font-bold">Unified Search</h4>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Enter any identifier - phone, email, username, domain, image, or crypto wallet to initiate comprehensive analysis.
+                        </p>
+                        
+                        <div class="flex mb-4">
+                            <div class="w-8 h-8 rounded-full bg-osint-accent flex items-center justify-center mr-2">
+                                <i class="fas fa-project-diagram text-osint-blue"></i>
+                            </div>
+                            <h4 class="text-lg font-bold">Relationship Mapping</h4>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Visualize connections between entities with interactive relationship graphs.
+                        </p>
+                        
+                        <div class="flex">
+                            <div class="w-8 h-8 rounded-full bg-osint-accent flex items-center justify-center mr-2">
+                                <i class="fas fa-chart-line text-osint-blue"></i>
+                            </div>
+                            <h4 class="text-lg font-bold">AI-Powered Insights</h4>
+                        </div>
+                        <p class="text-gray-300">
+                            Get summarized intelligence reports with risk scoring and actionable insights.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-osint-blue p-6 rounded-xl">
+                <h3 class="text-xl font-bold mb-4">API Integration</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-card-bg rounded-lg">
+                        <div class="font-mono text-sm mb-2">POST /api/v1/phone-intel</div>
+                        <p class="text-gray-300 text-sm">Get comprehensive phone intelligence</p>
+                    </div>
+                    <div class="p-4 bg-card-bg rounded-lg">
+                        <div class="font-mono text-sm mb-2">POST /api/v1/image-analysis</div>
+                        <p class="text-gray-300 text-sm">Analyze images for metadata and faces</p>
+                    </div>
+                    <div class="p-4 bg-card-bg rounded-lg">
+                        <div class="font-mono text-sm mb-2">POST /api/v1/ai-assessment</div>
+                        <p class="text-gray-300 text-sm">Get AI-powered trust scoring</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section id="tech" class="py-20">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-2 section-title">Technology Stack</h2>
+            <p class="text-gray-300 mb-12 max-w-3xl">
+                Built with cutting-edge technologies to handle complex intelligence operations at scale.
+            </p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-card-bg p-6 rounded-xl text-center card-hover">
+                    <i class="fab fa-python text-5xl text-blue-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Python</h3>
+                    <p class="text-gray-300 text-sm">Core framework logic and modules</p>
+                </div>
+                
+                <div class="bg-card-bg p-6 rounded-xl text-center card-hover">
+                    <i class="fas fa-brain text-5xl text-yellow-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Machine Learning</h3>
+                    <p class="text-gray-300 text-sm">TensorFlow, PyTorch, Scikit-learn</p>
+                </div>
+                
+                <div class="bg-card-bg p-6 rounded-xl text-center card-hover">
+                    <i class="fas fa-database text-5xl text-green-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Databases</h3>
+                    <p class="text-gray-300 text-sm">Elasticsearch, PostgreSQL, Redis</p>
+                </div>
+                
+                <div class="bg-card-bg p-6 rounded-xl text-center card-hover">
+                    <i class="fab fa-js text-5xl text-yellow-300 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Web Interface</h3>
+                    <p class="text-gray-300 text-sm">React, Node.js, Tailwind CSS</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GitHub Section -->
+    <section id="github" class="py-20 bg-card-bg">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <div class="w-20 h-20 rounded-full bg-osint-accent flex items-center justify-center mx-auto mb-6">
+                    <i class="fab fa-github text-osint-blue text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-4">🧠 MR.OSINT-X — Intelligence-Grade OSINT Framework</h2>
+                <div class="text-center mb-6">
+                    <p class="text-xl font-bold mb-4">🔥 All-in-One Global Toolkit for Cybercrime Investigation, Threat Intelligence, Digital Forensics, Reconnaissance, Intelligence Operations, and Geo/Crypto/DarkNet Analysis</p>
+                   
+                </div>
+                <p class="text-gray-300 mb-8">
+                    Join thousands of security professionals, researchers, and investigators using MR.OSINT-X for advanced threat intelligence and analysis.
+                </p>
+                
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <a href="https://github.com/mrradix-ad/mr-osint-x" class="px-6 py-3 bg-osint-accent text-osint-blue font-bold rounded-lg hover:bg-opacity-90 transition">
+                        <i class="fab fa-github mr-2"></i> GitHub Repository
+                    </a>
+                    <a href="docs-mr-osint-x/index.html" class="px-6 py-3 border-2 border-osint-accent text-osint-accent font-bold rounded-lg hover:bg-osint-accent hover:text-osint-blue transition">
+                        Documentation
+                    </a>
+                </div>
+                
+                <div class="bg-osint-blue p-6 rounded-xl text-left">
+                    <h3 class="text-xl font-bold mb-4">🚀 Quick Start</h3>
+                    <h4 class="font-bold mb-2">🐳 Docker Installation (Recommended)</h4>
+                    <div class="terminal mb-4">
+                        <div class="terminal-header px-4 py-2 flex items-center">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <div class="ml-3 text-sm">docker</div>
+                        </div>
+                        <div class="terminal-body p-4">
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> git clone https://github.com/mrradix-ad/mr-osint-x</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> cd mr-osint-x</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> docker-compose up -d</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold mb-2">🐍 Manual Installation</h4>
+                    <div class="terminal mb-4">
+                        <div class="terminal-header px-4 py-2 flex items-center">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <div class="ml-3 text-sm">install</div>
+                        </div>
+                        <div class="terminal-body p-4">
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> sudo apt update && sudo apt install -y python3-pip python3-venv tor postgresql redis-server</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> pip install -r requirements.txt</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> python3 setup.py init_db</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold mb-2">💡 Usage Examples</h4>
+                    <div class="terminal">
+                        <div class="terminal-header px-4 py-2 flex items-center">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <div class="ml-3 text-sm">examples</div>
+                        </div>
+                        <div class="terminal-body p-4">
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> mr-osint-x --phone +1234567890 --full-scan</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> mr-osint-x --email target@example.com --leaks --social</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> mr-osint-x --wallet 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa --trace-funds</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="terminal">
+                        <div class="terminal-header px-4 py-2 flex items-center">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <div class="ml-3 text-sm">installation</div>
+                        </div>
+                        <div class="terminal-body p-4">
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> git clone https://github.com/mrradix-ad/mr-osint-x</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> cd mr-osint-x</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> pip install -r requirements.txt</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> python setup.py configure</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-command"> python mr_osint_x.py --help</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-10 border-t border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-osint-accent flex items-center justify-center mr-3">
+                            <i class="fas fa-satellite text-osint-blue"></i>
+                        </div>
+                        <span class="text-xl font-bold">MR.OSINT-X</span>
+                    </div>
+                    <p class="text-gray-400 mt-2 text-sm">Advanced Open Source Intelligence Framework</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="coming-soon.html" class="text-gray-400 hover:text-osint-accent">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="coming-soon.html" class="text-gray-400 hover:text-osint-accent">
+                        <i class="fab fa-discord text-xl"></i>
+                    </a>
+                    <a href="coming-soon.html" class="text-gray-400 hover:text-osint-accent">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+                <p>© 2025 MR.OSINT-X Project. Open source under MIT License. For research and authorized investigations only.</p>
+                <p class="mt-2">Always comply with local laws and regulations when conducting OSINT research.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('nav-scrolled', 'bg-nav-bg');
+            } else {
+                navbar.classList.remove('nav-scrolled', 'bg-nav-bg');
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Active nav link highlighting
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (pageYOffset >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active-nav');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active-nav');
+                }
+            });
+        });
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=mrradix/mr-osint-x" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
